@@ -1,0 +1,39 @@
+###
+POST https://{{host}}/api/v1/login
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username={{username}}&password={{password}}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.global.set("auth_token", response.body.access_token);
+
+    client.test("Has access token", function() {
+        client.assert(response.body.hasOwnProperty("access_token"), "Cannot find 'access token' option in response");
+    });
+%}
+
+###
+POST https://{{host}}/api/v1/status
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "algorithm_id": {
+    "public_address": "{{username}}"
+  },
+  "transaction_hash": {
+    "value": "{{tx_hash}}"
+  },
+  "timeout_in_seconds": 0
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+%}

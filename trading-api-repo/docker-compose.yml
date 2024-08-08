@@ -1,0 +1,168 @@
+version: "2.3"
+services:
+
+  developer-base-image:
+    image: "developer-base-image:${DEVIM_TAG:-latest}"
+    build:
+      context: "developer_base_image"
+      dockerfile: "Dockerfile"
+    environment:
+      MERCOR_GIT_LINK: "https://github.com/StijnVerdenius/test"
+      MERCOR_SDK_USERNAME: "my-username"
+      MERCOR_SDK_PASSWORD: "my-password"
+
+  rse:
+    container_name: "rse"
+    build:
+      context: .
+      dockerfile: "rse/Dockerfile"
+    environment:
+      JWT_SYSTEM_USERNAME: johndoe
+      JWT_SYSTEM_PASSWORD: secret
+      SQL_BUILD: "1"
+      STAGE: "development"
+      ENABLE_AWS_EC2: "1"
+      REGION_NAME: "eu-west-1"
+      SQL_HOST: "localhost"
+    ports:
+      - 9090:8080
+    command: bash -c "pipenv run gunicorn rse.api.api:app -w 1 --threads 1 --timeout 60 --reload --bind 0.0.0.0:8080 -k uvicorn.workers.UvicornWorker"
+    restart: on-failure
+    volumes:
+      - ./rse:/app/rse
+
+  rse_postgres:
+    container_name: rse_postgres
+    image: "postgres" # use latest official postgres version
+    env_file:
+      - ./rse/database.env # configure postgres
+    volumes:
+      - rse_postgres_data:/var/lib/postgresql/data/ # persist data even if container shuts down
+
+  traefik:
+    container_name: traefik
+    image: traefik:v2.2
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./trading_api/traefik.dev.toml:/etc/traefik/traefik.toml
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  trading_api:
+    platform: linux/amd64
+    depends_on:
+      - traefik
+      - redis
+      - mongo
+    expose:
+      - 5000
+    build:
+      context: .
+      dockerfile: trading_api/Dockerfile
+    command: sh -c "pipenv run gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5000 --reload"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.trading_api_fastapi.rule=Host(`trading-api.localhost`)"
+      - "traefik.http.services.trading_api_service.loadbalancer.server.port=5000"
+      - "traefik.http.routers.trading_api_fastapi.service=trading_api_service"
+      - "traefik.http.services.trading_api_service.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.trading_api_service.loadbalancer.healthcheck.interval=5s"
+    volumes:
+      - ./trading_api:/app/trading_api
+      - ./mercor_smart_contracts:/app/mercor_smart_contracts
+      - ./mercor_smart_contracts/v1.0/artifacts:/app/trading_api/.contracts/v1.0/artifacts
+      - ./mercor_smart_contracts/v1.1/artifacts:/app/trading_api/.contracts/v1.1/artifacts
+      - ./mercor_smart_contracts/v2.0/artifacts:/app/trading_api/.contracts/v2.0/artifacts
+      - ./mercor_smart_contracts/mm/v1.0/artifacts:/app/trading_api/.contracts/mm/v1.0/artifacts
+    environment:
+      - WEB3_PROVIDER_ENDPOINT=''
+      - REDIS_LOCK_TIMEOUT_MS=100_000
+      - USE_WEB3_ENDPOINT=0
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SYSTEM_USERNAME=System John Doe
+      - JWT_SYSTEM_PASSWORD=secret
+      - JWT_SYSTEM_USERNAME_MM=System John Doe
+      - JWT_SYSTEM_PASSWORD_MM=secret
+      - MONGO_CONNECTION_URI_MM=mongodb://root:root@mongo:27027
+
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    container_name: "mongo"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: trading_api
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongodb_data_container:/data/db
+      - ./.ci/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  mongo_express:
+    container_name: "mongo_express"
+    image: mongo-express
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+    depends_on:
+      - mongo
+
+  mercor_website-db:
+    container_name: mercor_website-db
+    image: postgres:12.7
+    ports:
+      - 5432:5432
+    env_file:
+      - ./mercor_website/.env
+    volumes:
+      - mercor_website-db-data:/var/lib/postgresql
+
+  mercor_website:
+    container_name: mercor_website
+    platform: linux/amd64
+    depends_on:
+      - mercor_website-db
+      - trading_api
+    ports:
+      - 8000:80
+    expose:
+      - 8000
+    build:
+      context: .
+      dockerfile: mercor_website/Dockerfile
+    command: python3 manage.py runserver 0.0.0.0:80
+    volumes:
+      - ./mercor_website:/app/mercor_website/
+
+  blockchain:
+    container_name: blockchain
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./ganache_data:/ganache_data
+    entrypoint:
+      - node
+      - /app/ganache-core.docker.cli.js
+      - -f
+      - https://speedy-nodes-nyc.moralis.io/e9ac95cf203f2fd99f11f93c/bsc/mainnet/archive
+      - --networkId
+      - '5777'
+      - --debug
+      - --account="0x0000000000000000000000000000000000000000000000000000000000000001,1000000000000000000000000000"
+      - --account="0x0000000000000000000000000000000000000000000000000000000000000002,1000000000000000000000000000"
+
+volumes:
+  mercor_website-db-data:
+  mongodb_data_container:
+  rse_postgres_data:

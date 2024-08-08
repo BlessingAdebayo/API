@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "==0.65.2"
+uvicorn = {extras = ["standard"], version = "==0.14"}
+gunicorn = "==20.1"
+pytest = "==6.2"
+requests = "==2.25"
+web3 = {extras = ["tester"], version = "*"}
+python-dotenv = "*"
+redis = "*"
+py-solc-x = "*"
+python-jose = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
+python-multipart = "*"
+boto3 = "==1.18"
+pyopenssl = "==20.0"
+asn1 = "==2.4"
+pymongo = "*"
+pytest-xdist = "*"
+
+[dev-packages]
+mypy = "*"
+types-redis = "*"
+black = "*"
+
+[requires]
+python_version = "3.9"

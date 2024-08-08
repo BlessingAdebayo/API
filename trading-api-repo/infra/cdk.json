@@ -1,0 +1,220 @@
+{
+  "app": "python app.py",
+  "context": {
+    "ingress_subdomain": "www",
+    "trading_api": {
+      "staging": {
+        "subnets": [
+          {
+            "name": "Public",
+            "type": "PUBLIC",
+            "mask": 27
+          },
+          {
+            "name": "Isolated",
+            "type": "ISOLATED",
+            "mask": 25
+          },
+          {
+            "name": "Private",
+            "type": "PRIVATE",
+            "mask": 23
+          }
+        ],
+        "project_name": "mercor",
+        "stage_name": "staging",
+        "dns_name": "staging.api.mercor.finance",
+        "vpc_subnet_cidr": "172.100.16.0/21",
+        "vpc_routed_subnet": "ISOLATED",
+        "ec2_type": "t3.micro",
+        "certificate_arn": "arn:aws:acm:eu-west-1:713011802156:certificate/7b8bd937-e124-4de9-a96d-e0b4ca71d489",
+        "access_key_name": "ec2-trading-api-staging-access-key",
+        "nr_instances": 1,
+        "volume_size": 16,
+        "mongo": {
+          "removal_policy": "DESTROY",
+          "instance_type": "t3.medium",
+          "subnet_type": "ISOLATED",
+          "instances": 1,
+          "master_username": "masterdocdb"
+        },
+        "redis": {
+          "instance_type": "cache.t3.micro"
+        }
+      },
+      "development": {
+        "subnets": [
+          {
+            "name": "Public",
+            "type": "PUBLIC",
+            "mask": 27
+          },
+          {
+            "name": "Isolated",
+            "type": "ISOLATED",
+            "mask": 25
+          },
+          {
+            "name": "Private",
+            "type": "PRIVATE",
+            "mask": 23
+          }
+        ],
+        "project_name": "mercor",
+        "stage_name": "development",
+        "dns_name": "dev.api.mercor.finance",
+        "vpc_subnet_cidr": "172.100.16.0/21",
+        "vpc_routed_subnet": "ISOLATED",
+        "ec2_type": "t3.micro",
+        "certificate_arn": "arn:aws:acm:eu-west-1:713011802156:certificate/218c7c64-c26d-4d73-ada5-3cfd5b886141",
+        "access_key_name": "ec2-trading-api-development-access-key",
+        "nr_instances": 2,
+        "volume_size": 16,
+        "mongo": {
+          "removal_policy": "DESTROY",
+          "instance_type": "t3.medium",
+          "subnet_type": "ISOLATED",
+          "instances": 1,
+          "master_username": "masterdocdb"
+        },
+        "redis": {
+          "instance_type": "cache.t3.micro"
+        }
+      },
+      "production": {
+        "subnets": [
+          {
+            "name": "Public",
+            "type": "PUBLIC",
+            "mask": 27
+          },
+          {
+            "name": "Isolated",
+            "type": "ISOLATED",
+            "mask": 25
+          },
+          {
+            "name": "Private",
+            "type": "PRIVATE",
+            "mask": 23
+          }
+        ],
+        "project_name": "mercor",
+        "stage_name": "production",
+        "dns_name": "api.mercor.finance",
+        "vpc_subnet_cidr": "172.100.16.0/21",
+        "vpc_routed_subnet": "ISOLATED",
+        "ec2_type": "t3.large",
+        "certificate_arn": "arn:aws:acm:eu-west-1:713011802156:certificate/6e36b87a-54b6-4f64-af94-93c0f5161047",
+        "access_key_name": "ec2-production-access-key",
+        "nr_instances": 2,
+        "volume_size": 32,
+        "mongo": {
+          "removal_policy": "RETAIN",
+          "instance_type": "r5.large",
+          "subnet_type": "ISOLATED",
+          "instances": 1,
+          "master_username": "masterdocdb"
+        },
+        "redis": {
+          "instance_type": "cache.t3.medium"
+        }
+      }
+    },
+    "rse": {
+      "staging": {
+        "subnets": [
+          {
+            "name": "Public",
+            "type": "PUBLIC",
+            "mask": 27
+          },
+          {
+            "name": "Databases",
+            "type": "ISOLATED",
+            "mask": 25
+          },
+          {
+            "name": "Apps",
+            "type": "PRIVATE",
+            "mask": 23
+          }
+        ],
+        "project_name": "mercor",
+        "stage_name": "staging",
+        "dns_name": "staging.rse.mercor.finance",
+        "vpc_subnet_cidr": "172.100.0.0/21",
+        "vpc_routed_subnet": "ISOLATED",
+        "ec2_type": "t3.micro",
+        "certificate_arn": "#todo",
+        "access_key_name": "ec2-staging-access-key",
+        "nr_instances": 1,
+        "volume_size": 16,
+        "subnetwork_base_algonodes": 22,
+        "postgres": {}
+      },
+      "development": {
+        "subnets": [
+          {
+            "name": "Public",
+            "type": "PUBLIC",
+            "mask": 27
+          },
+          {
+            "name": "Databases",
+            "type": "ISOLATED",
+            "mask": 25
+          },
+          {
+            "name": "Apps",
+            "type": "PRIVATE",
+            "mask": 23
+          }
+        ],
+        "project_name": "mercor",
+        "stage_name": "development",
+        "dns_name": "dev.rse.mercor.finance",
+        "vpc_subnet_cidr": "172.100.0.0/21",
+        "vpc_routed_subnet": "ISOLATED",
+        "ec2_type": "t3.micro",
+        "certificate_arn": "arn:aws:acm:eu-west-1:713011802156:certificate/a3e83389-656d-4ef4-99bb-2cbca503993b",
+        "access_key_name": "ec2-rse-development-access-key",
+        "nr_instances": 1,
+        "volume_size": 16,
+        "subnetwork_base_algonodes": 22,
+        "postgres": {}
+      },
+      "production": {
+        "subnets": [
+                   {
+            "name": "Public",
+            "type": "PUBLIC",
+            "mask": 27
+          },
+          {
+            "name": "Databases",
+            "type": "ISOLATED",
+            "mask": 25
+          },
+          {
+            "name": "Apps",
+            "type": "PRIVATE",
+            "mask": 23
+          }
+        ],
+        "project_name": "mercor",
+        "stage_name": "production",
+        "dns_name": "rse.mercor.finance",
+        "vpc_subnet_cidr": "172.100.0.0/21",
+        "vpc_routed_subnet": "ISOLATED",
+        "ec2_type": "t3.large",
+        "certificate_arn": "arn:aws:acm:eu-west-1:713011802156:certificate/353ef86b-c588-4ceb-bddb-e147a8d1a02f",
+        "access_key_name": "ec2-rse-production-access-key",
+        "nr_instances": 2,
+        "volume_size": 32,
+        "subnetwork_base_algonodes": 16,
+        "postgres": {}
+      }
+    }
+  }
+}

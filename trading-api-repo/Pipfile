@@ -1,0 +1,22 @@
+[[source]]
+# This Pipfile is for running the basic commands / tooling
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pytest = "~=6.2"
+boto3 = "~=1.1"
+mypy = "~=0.9"
+black = "*"
+types-redis = "*"
+aenum = "*"
+isort = {extras = ["pipfile_deprecated_finder"], version = "*"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

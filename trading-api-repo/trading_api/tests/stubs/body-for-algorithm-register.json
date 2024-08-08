@@ -1,0 +1,8 @@
+{
+  "trading_contract_address": "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf",
+  "controller_wallet_address": "0xf05ef1c844e39757b6f94f89427b1ac302fcae1b",
+  "trading_contract_version": "1.0",
+  "chain_id": "RTN",
+  "unhashed_password": "secret",
+  "disabled": false
+}

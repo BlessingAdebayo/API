@@ -1,0 +1,14 @@
+{
+  "hash": {
+    "value": "NOTGOOD"
+  },
+  "trade": {
+    "algorithm_id": {
+      "public_address": "123-abc"
+    },
+    "slippage": {
+      "amount": 0.05
+    },
+    "relative_amount": 0.50
+  }
+}

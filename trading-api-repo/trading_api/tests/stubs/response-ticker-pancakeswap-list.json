@@ -1,0 +1,17 @@
+{
+  "updated_at": 0,
+  "data": {
+    "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82": {
+      "name": "PancakeSwap Token",
+      "symbol": "Cake",
+      "price": "1",
+      "price_BNB": "1"
+    },
+    "0x2170Ed0880ac9A755fd29B2688956BD959F933F8": {
+      "name": "Ethereum Token",
+      "symbol": "ETH",
+      "price": "1",
+      "price_BNB": "1"
+    }
+  }
+}
